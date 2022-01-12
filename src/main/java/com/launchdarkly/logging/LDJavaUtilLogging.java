@@ -68,12 +68,7 @@ final class LDJavaUtilLogging implements LDLogAdapter {
     
     @Override
     public void log(LDLogLevel level, final String format, final Object param) {
-      Supplier<String> deferFormat = new Supplier<String>() {
-        @Override
-        public String get() {
-          return format(format, param);
-        }
-      };
+      Supplier<String> deferFormat = new DeferFormat1(format, param);
       switch (level) {
       case DEBUG:
         logger.fine(deferFormat);
@@ -94,12 +89,7 @@ final class LDJavaUtilLogging implements LDLogAdapter {
 
     @Override
     public void log(LDLogLevel level, final String format, final Object param1, final Object param2) {
-      Supplier<String> deferFormat = new Supplier<String>() {
-        @Override
-        public String get() {
-          return format(format, param1, param2);
-        }
-      };
+      Supplier<String> deferFormat = new DeferFormat2(format, param1, param2);
       switch (level) {
       case DEBUG:
         logger.fine(deferFormat);
@@ -120,12 +110,7 @@ final class LDJavaUtilLogging implements LDLogAdapter {
 
     @Override
     public void log(LDLogLevel level, final String format, final Object... params) {
-      Supplier<String> deferFormat = new Supplier<String>() {
-        @Override
-        public String get() {
-          return format(format, params);
-        }
-      };
+      Supplier<String> deferFormat = new DeferFormat3(format, params);
       switch (level) {
       case DEBUG:
         logger.fine(deferFormat);
@@ -141,6 +126,53 @@ final class LDJavaUtilLogging implements LDLogAdapter {
         break;
       default:
         break;
+      }
+    }
+    
+    private static final class DeferFormat1 implements Supplier<String> {
+      private final String format;
+      private final Object param1;
+      
+      DeferFormat1(String format, Object param1) {
+        this.format = format;
+        this.param1 = param1;
+      }
+      
+      @Override
+      public String get() {
+        return format(format, param1);
+      }
+    }
+    
+    private static final class DeferFormat2 implements Supplier<String> {
+      private final String format;
+      private final Object param1;
+      private final Object param2;
+      
+      DeferFormat2(String format, Object param1, Object param2) {
+        this.format = format;
+        this.param1 = param1;
+        this.param2 = param2;
+      }
+      
+      @Override
+      public String get() {
+        return format(format, param1, param2);
+      }
+    }
+    
+    private static final class DeferFormat3 implements Supplier<String> {
+      private final String format;
+      private final Object[] params;
+      
+      DeferFormat3(String format, Object[] params) {
+        this.format = format;
+        this.params = params;
+      }
+      
+      @Override
+      public String get() {
+        return format(format, params);
       }
     }
   }

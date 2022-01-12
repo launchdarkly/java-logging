@@ -40,6 +40,10 @@ To build the project and run all unit tests:
 ./gradlew test
 ```
 
+## Note on Java version and Android support
+
+This project can be used both in server-side Java and in Android. Its minimum Java version is 8, but not all Java 8 APIs and syntax are supported in Android. The CI jobs for this project include an Android job that runs all of the unit tests in Android, to verify that no unsupported APIs are being used.
+
 ## Code coverage
 
 It is important to keep unit test coverage as close to 100% as possible in this project, since the SDK projects will not exercise every `com.launchdarkly.logging` method in their own unit tests.
