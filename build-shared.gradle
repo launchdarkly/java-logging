@@ -25,11 +25,10 @@ dependencies {
     // Dependencies will not be exposed in the pom - see pom.withXml block in build.gradle
     implementation "org.slf4j:slf4j-api:${versions.slf4j}"
 
-    testCompileOnly "org.hamcrest:hamcrest-library:1.3"
+    testImplementation "org.hamcrest:hamcrest-library:1.3"
     testImplementation "junit:junit:4.12"
     testImplementation "uk.org.lidalia:slf4j-test:1.1.0"
-    testImplementation "com.launchdarkly:test-helpers:1.1.0"
-    // Note that com.launchdarkly:test-helpers has a runtime dependency on Hamcrest, which
-    // is why we specify Hamcrest here as testCompileOnly rather than testImplementation;
-    // that puts it in our compile-time classpath without loading it twice.
+    testImplementation "com.launchdarkly:test-helpers:1.1.0" {
+        exclude group: "org.hamcrest"
+    }
 }

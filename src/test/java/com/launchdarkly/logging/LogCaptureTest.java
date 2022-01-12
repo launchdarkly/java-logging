@@ -40,7 +40,7 @@ public class LogCaptureTest extends ParameterizedTestWithLevel {
     List<LogCapture.Message> messages = sink.getMessages();
     List<String> messageStrings = sink.getMessageStrings();
     
-    if (outputLevel == LDLogLevel.NONE || (enableLevel != null && outputLevel.compareTo(enableLevel) < 0)) {
+    if (enableLevel != null && outputLevel.compareTo(enableLevel) < 0) {
       assertThat(messages, hasSize(0));
       assertThat(messageStrings, hasSize(0));
     } else {
