@@ -143,7 +143,7 @@ jobs:
           command: rsync -r ./src/test/java/ ./src/androidTest/java/ --exclude='BaseTest.java'
 
       - android/start-emulator-and-run-tests:
-          system-image: system-images;android-25;default;x86
+          system-image: system-images;android-26;default;x86
           max-tries: 1
           post-emulator-launch-assemble-command: ./gradlew -b build-android.gradle :assembleAndroidTest
           test-command: ./gradlew -b build-android.gradle :connectedAndroidTest
