@@ -1,5 +1,6 @@
 package com.launchdarkly.logging;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,22 +62,30 @@ final class LDJavaUtilLogging implements LDLogAdapter {
 
     // To avoid unnecessary string computations for debug output, we don't want to
     // pre-format messages for disabled levels. We handle that by using the overloads
-    // of Logger methods that take a Supplier<String> rather than a String.
+    // of Logger methods that take a Supplier<String> rather than a String. Note that
+    // we're using anonymous classes here instead of a nicer lambda syntax, because
+    // lambdas don't work right in Android.
     
     @Override
-    public void log(LDLogLevel level, String format, Object param) {
+    public void log(LDLogLevel level, final String format, final Object param) {
+      Supplier<String> deferFormat = new Supplier<String>() {
+        @Override
+        public String get() {
+          return format(format, param);
+        }
+      };
       switch (level) {
       case DEBUG:
-        logger.fine(() -> format(format, param));
+        logger.fine(deferFormat);
         break;
       case INFO:
-        logger.info(() -> format(format, param));
+        logger.info(deferFormat);
         break;
       case WARN:
-        logger.warning(() -> format(format, param));
+        logger.warning(deferFormat);
         break;
       case ERROR:
-        logger.severe(() -> format(format, param));
+        logger.severe(deferFormat);
         break;
       default:
         break;
@@ -84,19 +93,25 @@ final class LDJavaUtilLogging implements LDLogAdapter {
     }
 
     @Override
-    public void log(LDLogLevel level, String format, Object param1, Object param2) {
+    public void log(LDLogLevel level, final String format, final Object param1, final Object param2) {
+      Supplier<String> deferFormat = new Supplier<String>() {
+        @Override
+        public String get() {
+          return format(format, param1, param2);
+        }
+      };
       switch (level) {
       case DEBUG:
-        logger.fine(() -> format(format, param1, param2));
+        logger.fine(deferFormat);
         break;
       case INFO:
-        logger.info(() -> format(format, param1, param2));
+        logger.info(deferFormat);
         break;
       case WARN:
-        logger.warning(() -> format(format, param1, param2));
+        logger.warning(deferFormat);
         break;
       case ERROR:
-        logger.severe(() -> format(format, param1, param2));
+        logger.severe(deferFormat);
         break;
       default:
         break;
@@ -104,19 +119,25 @@ final class LDJavaUtilLogging implements LDLogAdapter {
     }
 
     @Override
-    public void log(LDLogLevel level, String format, Object... params) {
+    public void log(LDLogLevel level, final String format, final Object... params) {
+      Supplier<String> deferFormat = new Supplier<String>() {
+        @Override
+        public String get() {
+          return format(format, params);
+        }
+      };
       switch (level) {
       case DEBUG:
-        logger.fine(() -> format(format, params));
+        logger.fine(deferFormat);
         break;
       case INFO:
-        logger.info(() -> format(format, params));
+        logger.info(deferFormat);
         break;
       case WARN:
-        logger.warning(() -> format(format, params));
+        logger.warning(deferFormat);
         break;
       case ERROR:
-        logger.severe(() -> format(format, params));
+        logger.severe(deferFormat);
         break;
       default:
         break;
