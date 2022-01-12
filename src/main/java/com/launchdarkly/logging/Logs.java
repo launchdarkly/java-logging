@@ -122,7 +122,9 @@ public abstract class Logs {
    * The returned object has no configuration methods; it will use whatever
    * global configuration is defined by {@code java.util.logging} (for instance,
    * the standard system property {@code java.util.logging.config.file}).
-   * 
+   * <p>
+   * In Android, using this method requires Android API 26 or higher.
+   *
    * @return a log adapter
    */
   public static LDLogAdapter toJavaUtilLogging() {
