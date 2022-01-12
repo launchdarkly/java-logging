@@ -64,6 +64,7 @@ dependencies {
     androidTestImplementation "uk.org.lidalia:slf4j-test:1.1.0"
     androidTestImplementation "com.android.support.test:runner:1.0.2"
     androidTestImplementation("com.launchdarkly:test-helpers:1.1.0") {
-        exclude group: "org.hamcrest"
+        exclude group: "org.hamcrest" // avoid duplicate loading of Hamcrest classes
+        exclude group: "org.eclipse.jetty" // we don't use the HTTP helpers and they don't work in Android
     }
 }
