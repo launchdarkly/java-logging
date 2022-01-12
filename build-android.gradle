@@ -63,4 +63,5 @@ dependencies {
     androidTestImplementation "org.hamcrest:hamcrest-library:1.3"
     androidTestImplementation "uk.org.lidalia:slf4j-test:1.1.0"
     androidTestImplementation "com.android.support.test:runner:1.0.2"
+    androidTestImplementation "com.launchdarkly:test-helpers:1.1.0"
 }
