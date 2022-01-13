@@ -1,6 +1,5 @@
 package com.launchdarkly.logging;
 
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,42 +40,52 @@ final class LDJavaUtilLogging implements LDLogAdapter {
     }
     
     // To avoid unnecessary string computations for debug output, we don't want to
-    // pre-format messages for disabled levels. We handle that by using the overloads
-    // of Logger methods that take a Supplier<String> rather than a String.
+    // pre-format messages for disabled levels. We'll avoid that by checking if the
+    // level is enabled first. It would be simpler to use the overloads of Logger
+    // methods that take a Supplier<String> rather than a String-- but, those don't
+    // exist in older Android API versions.
     
     @Override
     public void log(LDLogLevel level, Object message) {
-      logInternal(level, () -> message == null ? "" : message.toString());
+      if (isEnabled(level)) {
+        logInternal(level, message == null ? "" : message.toString());
+      }
     }
     
     @Override
     public void log(LDLogLevel level, String format, Object param) {
-      logInternal(level, () -> format(format, param));
+      if (isEnabled(level)) {
+        logInternal(level, format(format, param));
+      }
     }
 
     @Override
     public void log(LDLogLevel level, String format, Object param1, Object param2) {
-      logInternal(level, () -> format(format, param1, param2));
+      if (isEnabled(level)) {
+        logInternal(level, format(format, param1, param2));
+      }
     }
 
     @Override
     public void log(LDLogLevel level, String format, Object... params) {
-      logInternal(level, () -> format(format, params));
+      if (isEnabled(level)) {
+        logInternal(level, format(format, params));
+      }
     }
     
-    private void logInternal(LDLogLevel level, Supplier<String> lazyString) {
+    private void logInternal(LDLogLevel level, String text) {
       switch (level) {
       case DEBUG:
-        logger.fine(lazyString);
+        logger.fine(text);
         break;
       case INFO:
-        logger.info(lazyString);
+        logger.info(text);
         break;
       case WARN:
-        logger.warning(lazyString);
+        logger.warning(text);
         break;
       case ERROR:
-        logger.severe(lazyString);
+        logger.severe(text);
         break;
       default:
         break;

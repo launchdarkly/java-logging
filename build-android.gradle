@@ -26,11 +26,11 @@ repositories {
 apply from: 'build-shared.gradle'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName version
