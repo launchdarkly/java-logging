@@ -42,6 +42,7 @@ public final class LogCapture implements LDLogAdapter {
    * Information about a captured log message.
    */
   public static final class Message {
+    private final Instant timestamp;
     private final String loggerName;
     private final LDLogLevel level;
     private final String text;
@@ -53,12 +54,17 @@ public final class LogCapture implements LDLogAdapter {
      * @param level the log level
      * @param text the text of the message, after any parameters have been substituted
      */
-    public Message(String loggerName, LDLogLevel level, String text) {
+    public Message(Instant timestamp, String loggerName, LDLogLevel level, String text) {
+      this.timestamp = timestamp;
       this.loggerName = loggerName;
       this.level = level;
       this.text = text;
     }
 
+    public Instant getTimestamp() {
+      return timestamp;
+    }
+    
     /**
      * Returns the name of the logger that produced the message.
      * 
@@ -90,19 +96,26 @@ public final class LogCapture implements LDLogAdapter {
     public boolean equals(Object other) {
       if (other instanceof Message) {
         Message o = (Message)other;
-        return Objects.equals(loggerName, o.loggerName) && level == o.level && Objects.equals(text, o.text);
+        return Objects.equals(timestamp, o.timestamp) &&
+            Objects.equals(loggerName, o.loggerName) &&
+            level == o.level &&
+            Objects.equals(text, o.text);
       }
       return false;
     }
     
     @Override
     public int hashCode() {
-      return Objects.hash(loggerName, level, text);
+      return Objects.hash(timestamp, loggerName, level, text);
     }
     
     @Override
     public String toString() {
       return "[" + loggerName + "] " + level.name() + ":" + text;
+    }
+    
+    public String toStringWithTimestamp() {
+      return timestamp + " " + toString();
     }
   }
 
@@ -232,7 +245,7 @@ public final class LogCapture implements LDLogAdapter {
 
     private void addMessage(LDLogLevel level, String message) {
       synchronized (messagesLock) {
-        messages.add(new Message(name, level, message));
+        messages.add(new Message(Instant.now(), name, level, message));
         messagesLock.notifyAll();
       }
     }
@@ -243,8 +256,8 @@ public final class LogCapture implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {
-      addMessage(level, message);
+    public void log(LDLogLevel level, Object message) {
+      addMessage(level, message == null ? "" : message.toString());
     }
 
     @Override

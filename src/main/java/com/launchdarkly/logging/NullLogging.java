@@ -22,7 +22,7 @@ final class NullLogging implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {}
+    public void log(LDLogLevel level, Object message) {}
 
     @Override
     public void log(LDLogLevel level, String format, Object param) {}

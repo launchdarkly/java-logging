@@ -66,6 +66,7 @@ public class LDJavaUtilLoggingTest extends ParameterizedTestWithLevel {
     
     String prefix = "[logname] " + javaLevelFor(outputLevel).toString() + ": ";
     assertThat(outputLines, contains(
+        prefix,
         prefix + SIMPLE_MESSAGE,
         prefix + MESSAGE_FORMAT_1_RESULT,
         prefix + MESSAGE_FORMAT_2_RESULT,

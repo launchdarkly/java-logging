@@ -1,5 +1,6 @@
 package com.launchdarkly.logging;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,84 +40,43 @@ final class LDJavaUtilLogging implements LDLogAdapter {
       }
     }
     
-    @Override
-    public void log(LDLogLevel level, String message) {
-      switch (level) {
-      case DEBUG:
-        logger.fine(message);
-        break;
-      case INFO:
-        logger.info(message);
-        break;
-      case WARN:
-        logger.warning(message);
-        break;
-      case ERROR:
-        logger.severe(message);
-        break;
-      default:
-        break;
-      }
-    }
-
     // To avoid unnecessary string computations for debug output, we don't want to
     // pre-format messages for disabled levels. We handle that by using the overloads
     // of Logger methods that take a Supplier<String> rather than a String.
     
     @Override
+    public void log(LDLogLevel level, Object message) {
+      logInternal(level, () -> message == null ? "" : message.toString());
+    }
+    
+    @Override
     public void log(LDLogLevel level, String format, Object param) {
-      switch (level) {
-      case DEBUG:
-        logger.fine(() -> format(format, param));
-        break;
-      case INFO:
-        logger.info(() -> format(format, param));
-        break;
-      case WARN:
-        logger.warning(() -> format(format, param));
-        break;
-      case ERROR:
-        logger.severe(() -> format(format, param));
-        break;
-      default:
-        break;
-      }
+      logInternal(level, () -> format(format, param));
     }
 
     @Override
     public void log(LDLogLevel level, String format, Object param1, Object param2) {
-      switch (level) {
-      case DEBUG:
-        logger.fine(() -> format(format, param1, param2));
-        break;
-      case INFO:
-        logger.info(() -> format(format, param1, param2));
-        break;
-      case WARN:
-        logger.warning(() -> format(format, param1, param2));
-        break;
-      case ERROR:
-        logger.severe(() -> format(format, param1, param2));
-        break;
-      default:
-        break;
-      }
+      logInternal(level, () -> format(format, param1, param2));
     }
 
     @Override
     public void log(LDLogLevel level, String format, Object... params) {
+      logInternal(level, () -> format(format, params));
+    }
+    
+    private void logInternal(LDLogLevel level, Supplier<String> lazyString) {
       switch (level) {
       case DEBUG:
-        logger.fine(() -> format(format, params));
+        logger.fine(lazyString);
         break;
       case INFO:
-        logger.info(() -> format(format, params));
+        logger.info(lazyString);
         break;
       case WARN:
-        logger.warning(() -> format(format, params));
+        logger.warning(lazyString);
         break;
       case ERROR:
-        logger.severe(() -> format(format, params));
+        logger.severe(lazyString);
         break;
       default:
         break;

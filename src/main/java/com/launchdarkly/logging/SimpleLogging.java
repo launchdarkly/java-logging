@@ -109,8 +109,8 @@ public final class SimpleLogging implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {
-      print(level, message);
+    public void log(LDLogLevel level, Object message) {
+      print(level, message == null ? "" : message.toString());
     }
 
     @Override

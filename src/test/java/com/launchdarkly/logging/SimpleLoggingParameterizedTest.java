@@ -40,6 +40,7 @@ public class SimpleLoggingParameterizedTest extends ParameterizedTestWithLevel {
     } else {
       String prefix = "[logname] " + outputLevel + ": ";
       List<String> expectedLines = Arrays.asList(
+          prefix,
           prefix + SIMPLE_MESSAGE,
           prefix + MESSAGE_FORMAT_1_RESULT,
           prefix + MESSAGE_FORMAT_2_RESULT,
@@ -55,7 +56,6 @@ public class SimpleLoggingParameterizedTest extends ParameterizedTestWithLevel {
     }
     List<String> ret = new ArrayList<>();
     for (String line: output.split("\r?\n")) { // might be using Unix linefeeds or Windows CRLF
-      line = line.trim();
       if (!line.isEmpty()) {
         ret.add(line);
       }

@@ -38,7 +38,7 @@ final class MultiLogging implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {
+    public void log(LDLogLevel level, Object message) {
       for (Channel c: channels) {
         c.log(level, message);
       }

@@ -21,7 +21,15 @@ import static com.launchdarkly.logging.LDLogLevel.WARN;
  * For efficiency (to avoid unnecessarily creating varargs arrays), each level has four
  * methods: one for non-parameterized messages, one for messages with a single parameter,
  * one for messages with two parameters, and one for messages with an arbitrary number
- * of parameters. See {@link LDLogAdapter.Channel} for the rules of parameter substitution.
+ * of parameters.
+ * <p>
+ * Parameter substitution uses the syntax defined by {@link SimpleFormat}: the format
+ * string can contain "{}" placeholders, which are replaced by the result of calling
+ * {@code toString()} on the corresponding parameter.
+ * <p>
+ * To avoid unnecessary computations, {@code toString()} is not called on parameters
+ * (or, in the single-argument methods, on the single {@code Object}) if logging at
+ * the specified level is disabled.
  */
 public final class LDLogger {
   private final String name;
@@ -46,6 +54,15 @@ public final class LDLogger {
   }
 
   /**
+   * Returns a logger instance that does nothing.
+   * 
+   * @return a no-op logger
+   */
+  public static LDLogger none() {
+    return withAdapter(Logs.none(), "");
+  }
+  
+  /**
    * Returns a logger instance derived from this instance.
    * 
    * @param nameSuffix will be appended to the current logger's name, separated by a
@@ -65,7 +82,7 @@ public final class LDLogger {
    * <p>
    * Generally, any desired level filtering should be set up in the initial logging
    * configuration, and code that generates log messages should simply call methods like
-   * {@link LDLogger#info(String)} without having to know whether that particular level
+   * {@link LDLogger#info(Object)} without having to know whether that particular level
    * is enabled or is being filtered out. However, if some kind of log message is
    * particularly expensive to compute, you may call {@link #isEnabled(LDLogLevel)};
    * a false value means you can skip trying to log any message at that level.
@@ -82,145 +99,145 @@ public final class LDLogger {
   
   /**
    * Writes a message at {@link LDLogLevel#DEBUG} level.
-   * @param message the message
+   * @param message the message (will be converted to a string with {@code toString()})
    */
-  public void debug(String message) {
+  public void debug(Object message) {
     channel.log(DEBUG, message);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#DEBUG} level with one parameter.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param the parameter
    */
-  public void debug(String message, Object param) {
-    channel.log(DEBUG, message, param);
+  public void debug(String format, Object param) {
+    channel.log(DEBUG, format, param);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#DEBUG} level with two parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param1 the first parameter
    * @param param2 the second parameter
    */
-  public void debug(String message, Object param1, Object param2) {
-    channel.log(DEBUG, message, param1, param2);
+  public void debug(String format, Object param1, Object param2) {
+    channel.log(DEBUG, format, param1, param2);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#DEBUG} level with any number of parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param params the parameters
    */
-  public void debug(String message, Object... params) {
-    channel.log(DEBUG, message, params);
+  public void debug(String format, Object... params) {
+    channel.log(DEBUG, format, params);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#INFO} level.
-   * @param message the message
+   * @param message the message (will be converted to a string with {@code toString()})
    */
-  public void info(String message) {
+  public void info(Object message) {
     channel.log(INFO, message);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#INFO} level with one parameter.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param the parameter
    */
-  public void info(String message, Object param) {
-    channel.log(INFO, message, param);
+  public void info(String format, Object param) {
+    channel.log(INFO, format, param);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#INFO} level with two parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param1 the first parameter
    * @param param2 the second parameter
    */
-  public void info(String message, Object param1, Object param2) {
-    channel.log(INFO, message, param1, param2);
+  public void info(String format, Object param1, Object param2) {
+    channel.log(INFO, format, param1, param2);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#INFO} level with any number of parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param params the parameters
    */
-  public void info(String message, Object... params) {
-    channel.log(INFO, message, params);
+  public void info(String format, Object... params) {
+    channel.log(INFO, format, params);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#WARN} level.
-   * @param message the message
+   * @param message the message (will be converted to a string with {@code toString()})
    */
-  public void warn(String message) {
+  public void warn(Object message) {
     channel.log(WARN, message);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#WARN} level with one parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param the parameter
    */
-   public void warn(String message, Object param) {
-    channel.log(WARN, message, param);
+   public void warn(String format, Object param) {
+    channel.log(WARN, format, param);
   }
 
    /**
     * Writes a message at {@link LDLogLevel#WARN} level with two parameters.
-    * @param message the message
+   * @param format the format string, containing "{}" placeholders
     * @param param1 the first parameter
     * @param param2 the second parameter
     */
-  public void warn(String message, Object param1, Object param2) {
-    channel.log(WARN, message, param1, param2);
+  public void warn(String format, Object param1, Object param2) {
+    channel.log(WARN, format, param1, param2);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#WARN} level with any number of parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param params the parameters
    */
-  public void warn(String message, Object... params) {
-    channel.log(WARN, message, params);
+  public void warn(String format, Object... params) {
+    channel.log(WARN, format, params);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#ERROR} level.
-   * @param message the message
+   * @param message the message (will be converted to a string with {@code toString()})
    */
-  public void error(String message) {
+  public void error(Object message) {
     channel.log(ERROR, message);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#ERROR} level with one parameter.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param param the parameter
    */
-   public void error(String message, Object param) {
-    channel.log(ERROR, message, param);
+   public void error(String format, Object param) {
+    channel.log(ERROR, format, param);
   }
 
    /**
     * Writes a message at {@link LDLogLevel#ERROR} level with two parameters.
-    * @param message the message
+   * @param format the format string, containing "{}" placeholders
     * @param param1 the first parameter
     * @param param2 the second parameter
     */
-  public void error(String message, Object param1, Object param2) {
-    channel.log(ERROR, message, param1, param2);
+  public void error(String format, Object param1, Object param2) {
+    channel.log(ERROR, format, param1, param2);
   }
 
   /**
    * Writes a message at {@link LDLogLevel#ERROR} level with any number of parameters.
-   * @param message the message
+   * @param format the format string, containing "{}" placeholders
    * @param params the parameters
    */
-  public void error(String message, Object... params) {
-    channel.log(ERROR, message, params);
+  public void error(String format, Object... params) {
+    channel.log(ERROR, format, params);
   }
 }

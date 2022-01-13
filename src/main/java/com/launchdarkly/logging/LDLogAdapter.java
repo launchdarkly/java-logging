@@ -76,7 +76,7 @@ public interface LDLogAdapter {
      * @param level the log level
      * @param message the message
      */
-    void log(LDLogLevel level, String message);
+    void log(LDLogLevel level, Object message);
 
     /**
      * Logs a message with a single parameter.

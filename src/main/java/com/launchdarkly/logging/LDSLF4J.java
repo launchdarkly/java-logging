@@ -60,22 +60,25 @@ public final class LDSLF4J implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {
-      switch (level) {
-      case DEBUG:
-        logger.debug(message);
-        break;
-      case INFO:
-        logger.info(message);
-        break;
-      case WARN:
-        logger.warn(message);
-        break;
-      case ERROR:
-        logger.error(message);
-        break;
-      default:
-        break;
+    public void log(LDLogLevel level, Object message) {
+      if (isEnabled(level)) {
+        String s = message == null ? "" : message.toString();
+        switch (level) {
+        case DEBUG:
+          logger.debug(s);
+          break;
+        case INFO:
+          logger.info(s);
+          break;
+        case WARN:
+          logger.warn(s);
+          break;
+        case ERROR:
+          logger.error(s);
+          break;
+        default:
+          break;
+        }
       }
     }
 

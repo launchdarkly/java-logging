@@ -38,25 +38,29 @@ public class LDSLF4JTest extends ParameterizedTestWithLevel {
     writeTestMessages(logger, outputLevel);
     
     List<LoggingEvent> events = targetLogger.getAllLoggingEvents();
-    assertThat(events, hasSize(4));
+    assertThat(events, hasSize(5));
     
     Level expectedLevel = slf4jLevelFor(outputLevel);
-    
+
     assertThat(events.get(0).getLevel(), equalTo(expectedLevel));
-    assertThat(events.get(0).getMessage(), equalTo(SIMPLE_MESSAGE));
+    assertThat(events.get(0).getMessage(), equalTo(""));
     assertThat(events.get(0).getArguments(), hasSize(0));
-    
+
     assertThat(events.get(1).getLevel(), equalTo(expectedLevel));
-    assertThat(events.get(1).getMessage(), equalTo(MESSAGE_FORMAT_1));
-    assertThat(events.get(1).getArguments(), contains(MESSAGE_PARAM_1));
+    assertThat(events.get(1).getMessage(), equalTo(SIMPLE_MESSAGE));
+    assertThat(events.get(1).getArguments(), hasSize(0));
     
     assertThat(events.get(2).getLevel(), equalTo(expectedLevel));
-    assertThat(events.get(2).getMessage(), equalTo(MESSAGE_FORMAT_2));
-    assertThat(events.get(2).getArguments(), contains(MESSAGE_PARAM_1, MESSAGE_PARAM_2));
+    assertThat(events.get(2).getMessage(), equalTo(MESSAGE_FORMAT_1));
+    assertThat(events.get(2).getArguments(), contains(MESSAGE_PARAM_1));
     
     assertThat(events.get(3).getLevel(), equalTo(expectedLevel));
-    assertThat(events.get(3).getMessage(), equalTo(MESSAGE_FORMAT_3));
-    assertThat(events.get(3).getArguments(), contains(MESSAGE_PARAM_1, MESSAGE_PARAM_2, MESSAGE_PARAM_3));
+    assertThat(events.get(3).getMessage(), equalTo(MESSAGE_FORMAT_2));
+    assertThat(events.get(3).getArguments(), contains(MESSAGE_PARAM_1, MESSAGE_PARAM_2));
+    
+    assertThat(events.get(4).getLevel(), equalTo(expectedLevel));
+    assertThat(events.get(4).getMessage(), equalTo(MESSAGE_FORMAT_3));
+    assertThat(events.get(4).getArguments(), contains(MESSAGE_PARAM_1, MESSAGE_PARAM_2, MESSAGE_PARAM_3));
   }
   
   @Test

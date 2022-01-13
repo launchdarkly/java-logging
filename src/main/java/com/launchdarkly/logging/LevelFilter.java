@@ -27,7 +27,7 @@ class LevelFilter implements LDLogAdapter {
     }
     
     @Override
-    public void log(LDLogLevel level, String message) {
+    public void log(LDLogLevel level, Object message) {
       if (isEnabled(level)) {
         wrappedChannel.log(level, message);
       }

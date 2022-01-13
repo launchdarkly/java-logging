@@ -61,7 +61,7 @@ public abstract class LogValues {
    * @param e an exception
    * @return the same exception
    */
-  public static Object exceptionSummary(Exception e) {
+  public static Object exceptionSummary(Throwable e) {
     return e;
   }
   
@@ -82,7 +82,7 @@ public abstract class LogValues {
    * @param e an exception
    * @return an object whose {@code toString()} method provides a stacktrace
    */
-  public static Object exceptionTrace(final Exception e) {
+  public static Object exceptionTrace(final Throwable e) {
     return e == null ? null : defer(new StringProvider() {
       @Override
       public String get() {

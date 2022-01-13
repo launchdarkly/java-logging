@@ -45,6 +45,7 @@ public class LogCaptureTest extends ParameterizedTestWithLevel {
       assertThat(messageStrings, hasSize(0));
     } else {
       LogCapture.Message[] expectedMessages = new LogCapture.Message[] {
+          new LogCapture.Message(logName, outputLevel, ""),
           new LogCapture.Message(logName, outputLevel, SIMPLE_MESSAGE),
           new LogCapture.Message(logName, outputLevel, MESSAGE_FORMAT_1_RESULT),
           new LogCapture.Message(logName, outputLevel, MESSAGE_FORMAT_2_RESULT),
@@ -52,6 +53,7 @@ public class LogCaptureTest extends ParameterizedTestWithLevel {
       };
       String prefix = outputLevel.name() + ":";
       String[] expectedStrings = new String[] {
+          prefix,
           prefix + SIMPLE_MESSAGE,
           prefix + MESSAGE_FORMAT_1_RESULT,
           prefix + MESSAGE_FORMAT_2_RESULT,
