@@ -50,6 +50,7 @@ public final class LogCapture implements LDLogAdapter {
     /**
      * Creates an instance.
      * 
+     * @param timestamp the time the message was generated
      * @param loggerName the logger name
      * @param level the log level
      * @param text the text of the message, after any parameters have been substituted
@@ -61,6 +62,11 @@ public final class LogCapture implements LDLogAdapter {
       this.text = text;
     }
 
+    /**
+     * Returns the time the message was generated.
+     * 
+     * @return the timestamp
+     */
     public Instant getTimestamp() {
       return timestamp;
     }
@@ -109,13 +115,25 @@ public final class LogCapture implements LDLogAdapter {
       return Objects.hash(timestamp, loggerName, level, text);
     }
     
+    /**
+     * Returns a basic string representation of the log item, in the format
+     * "[logger name] LEVEL: text".
+     * 
+     * @return a string representation
+     * @see #toStringWithTimestamp()
+     */
     @Override
     public String toString() {
       return "[" + loggerName + "] " + level.name() + ":" + text;
     }
     
+    /**
+     * Equivalent to {@link #toString()}, but also prefixes the line with a millisecond timestamp.
+     * 
+     * @return a string representation
+     */
     public String toStringWithTimestamp() {
-      return timestamp + " " + toString();
+      return SimpleLogging.DEFAULT_TIMESTAMP_FORMAT.format(timestamp) + " " + toString();
     }
   }
 

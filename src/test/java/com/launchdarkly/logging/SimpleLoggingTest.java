@@ -5,10 +5,11 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +27,7 @@ public class SimpleLoggingTest extends BaseTest {
       public void writeLine(String line) {
         lines.add(line);
       }
-    }).dateFormat(null);
+    }).timestampFormat(null);
     LDLogger logger = LDLogger.withAdapter(adapter, "logname");
     
     logger.info("hello");
@@ -57,7 +58,7 @@ public class SimpleLoggingTest extends BaseTest {
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).tag("logtag").dateFormat(null),
+        Logs.toStream(ps).tag("logtag").timestampFormat(null),
         "logname"
     );
     logger.warn("message");
@@ -68,7 +69,7 @@ public class SimpleLoggingTest extends BaseTest {
 
   @Test
   public void testDefaultDateFormat() {
-    String exampleDate = SimpleLogging.DEFAULT_DATE_FORMAT.format(new Date());
+    String exampleDate = SimpleLogging.DEFAULT_TIMESTAMP_FORMAT.format(Instant.now());
     
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(bos);
@@ -87,13 +88,13 @@ public class SimpleLoggingTest extends BaseTest {
   
   @Test
   public void testCustomDateFormat() {
-    String currentYear = new SimpleDateFormat("yyyy").format(new Date());
+    String currentYear = DateTimeFormatter.ofPattern("uuuu").format(Instant.now().atZone(ZoneOffset.UTC));
     
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).dateFormat(new SimpleDateFormat("yyyy")),
+        Logs.toStream(ps).timestampFormat(DateTimeFormatter.ofPattern("uuuu").withZone(ZoneOffset.UTC)),
         "logname"
     );
     logger.warn("message");
@@ -110,7 +111,7 @@ public class SimpleLoggingTest extends BaseTest {
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).dateFormat(null),
+        Logs.toStream(ps).timestampFormat(null),
         "logname"
     );
     logger.warn("message");

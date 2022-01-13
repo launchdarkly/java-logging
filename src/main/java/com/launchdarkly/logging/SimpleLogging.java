@@ -1,9 +1,9 @@
 package com.launchdarkly.logging;
 
 import java.io.PrintStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  * A basic logging implementation that formats output and sends it to an arbitrary destination. 
@@ -13,7 +13,7 @@ import java.util.Date;
  * <p>
  * Currently the output is always in the format "Timestamp [LoggerName] LEVEL: text", or, if a
  * tag is specified, "Timestamp {Tag} [LoggerName] LEVEL: text". The Timestamp format defaults
- * to {@link #DEFAULT_DATE_FORMAT} but can be customized.
+ * to {@link #DEFAULT_TIMESTAMP_FORMAT} but can be customized.
  * <p>
  * By itself, this class provides no level filtering. You may use
  * {@link Logs#level(LDLogAdapter, LDLogLevel)} to filter by level, although the LaunchDarkly
@@ -48,23 +48,20 @@ public final class SimpleLogging implements LDLogAdapter {
   }
   
   /**
-   * The default format for log timestamps. This is a {@code SimpleDateFormat} with the pattern
-   * {@code "yyyy-MM-dd HH:mm:ss.SSS zzz"}.
+   * The default format for log timestamps. This is a {@code DateTimeFormatter} with the pattern
+   * {@code "uuuu-MM-dd HH:mm:ss.SSS zzz"}.
    */
-  public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz");
+  public static final DateTimeFormatter DEFAULT_TIMESTAMP_FORMAT =
+      DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS zzz").withZone(ZoneOffset.UTC);
 
   final LineWriter lineWriter; // exposed for testing
   private final String tag;
-  private final DateFormat dateFormat;
-  private final Object dateFormatLock = new Object();
+  private final DateTimeFormatter timestampFormat;
   
-  SimpleLogging(LineWriter lineWriter, String tag, DateFormat dateFormat) {
+  SimpleLogging(LineWriter lineWriter, String tag, DateTimeFormatter timestampFormat) {
     this.lineWriter = lineWriter;
     this.tag = tag;
-    // DateFormat isn't thread-safe, so cloning it ensures that this instance belongs to us.
-    // But different threads could still be writing to the same log, so we will also need to
-    // synchronize on the DateFormat instance when we use it.
-    this.dateFormat = dateFormat == null ? null : (DateFormat)dateFormat.clone();
+    this.timestampFormat = timestampFormat;
   }
   
   /**
@@ -76,19 +73,19 @@ public final class SimpleLogging implements LDLogAdapter {
    * @return an adapter with the specified configuration
    */
   public SimpleLogging tag(String tag) {
-    return new SimpleLogging(this.lineWriter, tag, this.dateFormat);
+    return new SimpleLogging(this.lineWriter, tag, this.timestampFormat);
   }
   
   /**
-   * Specifies the format for date/timestamps. The default is {@code SimpleDateFormat.getDateTimeInstance()}.
+   * Specifies the format for date/timestamps. The default is {@link #DEFAULT_TIMESTAMP_FORMAT}.
    * <p>
    * This method does not modify the current instance, but returns a new adapter based on this one.
    * 
-   * @param dateFormat a {@code DateFormat}, or null to omit the date and time
+   * @param timestampFormat a {@code DateTimeFormatter}, or null to omit the date and time
    * @return an adapter with the specified configuration
    */
-  public SimpleLogging dateFormat(DateFormat dateFormat) {
-    return new SimpleLogging(this.lineWriter, this.tag, dateFormat);
+  public SimpleLogging timestampFormat(DateTimeFormatter timestampFormat) {
+    return new SimpleLogging(this.lineWriter, this.tag, timestampFormat);
   }
   
   @Override
@@ -130,10 +127,8 @@ public final class SimpleLogging implements LDLogAdapter {
     
     private void print(LDLogLevel level, String message) {
       StringBuilder s = new StringBuilder();
-      if (dateFormat != null) {
-        synchronized (dateFormatLock) { // see earlier comment about thread safety
-          s.append(dateFormat.format(new Date())).append(" ");
-        }
+      if (timestampFormat != null) {
+        s.append(timestampFormat.format(Instant.now())).append(" ");
       }
       if (tag != null && !tag.isEmpty()) {
         s.append("{").append(tag).append("} ");

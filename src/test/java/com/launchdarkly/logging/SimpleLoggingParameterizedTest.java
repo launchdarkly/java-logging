@@ -29,25 +29,21 @@ public class SimpleLoggingParameterizedTest extends ParameterizedTestWithLevel {
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).dateFormat(null),
+        Logs.toStream(ps).timestampFormat(null),
         "logname"
     );
     writeTestMessages(logger, outputLevel);
     List<String> resultLines = parseLines(bos.toString());
     
-    if (outputLevel == LDLogLevel.NONE) {
-      assertEquals(Collections.emptyList(), resultLines);
-    } else {
-      String prefix = "[logname] " + outputLevel + ": ";
-      List<String> expectedLines = Arrays.asList(
-          prefix,
-          prefix + SIMPLE_MESSAGE,
-          prefix + MESSAGE_FORMAT_1_RESULT,
-          prefix + MESSAGE_FORMAT_2_RESULT,
-          prefix + MESSAGE_FORMAT_3_RESULT
-          );
-      assertEquals(expectedLines, resultLines);
-    }
+    String prefix = "[logname] " + outputLevel + ": ";
+    List<String> expectedLines = Arrays.asList(
+        prefix,
+        prefix + SIMPLE_MESSAGE,
+        prefix + MESSAGE_FORMAT_1_RESULT,
+        prefix + MESSAGE_FORMAT_2_RESULT,
+        prefix + MESSAGE_FORMAT_3_RESULT
+        );
+    assertEquals(expectedLines, resultLines);
   }
   
   public static List<String> parseLines(String output) {

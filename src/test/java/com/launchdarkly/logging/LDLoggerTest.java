@@ -36,4 +36,10 @@ public class LDLoggerTest extends BaseTest {
     assertThat(logger1, sameInstance(logger));
     assertThat(logger2, sameInstance(logger));
   }
+  
+  @Test
+  public void noneLogger() {
+    LDLogger logger = LDLogger.none();
+    assertThat(logger.adapter, sameInstance(Logs.none()));
+  }
 }

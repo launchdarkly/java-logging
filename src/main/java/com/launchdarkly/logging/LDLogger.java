@@ -33,7 +33,7 @@ import static com.launchdarkly.logging.LDLogLevel.WARN;
  */
 public final class LDLogger {
   private final String name;
-  private final LDLogAdapter adapter;
+  final LDLogAdapter adapter; // exposed for testing
   private final Channel channel;
   
   LDLogger(String name, LDLogAdapter adapter, Channel channel) {

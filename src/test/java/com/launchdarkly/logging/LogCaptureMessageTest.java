@@ -5,6 +5,7 @@ import com.launchdarkly.testhelpers.TypeBehavior;
 import org.junit.Test;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,7 +18,9 @@ import static org.hamcrest.Matchers.nullValue;
 public class LogCaptureMessageTest extends BaseTest {
   @Test
   public void testBasicProperties() {
-    LogCapture.Message m = new LogCapture.Message("name", LDLogLevel.INFO, "text");
+    Instant timestamp = Instant.now();
+    LogCapture.Message m = new LogCapture.Message(timestamp, "name", LDLogLevel.INFO, "text");
+    assertThat(m.getTimestamp(), equalTo(timestamp));
     assertThat(m.getLoggerName(), equalTo("name"));
     assertThat(m.getLevel(), equalTo(LDLogLevel.INFO));
     assertThat(m.getText(), equalTo("text"));
@@ -26,10 +29,14 @@ public class LogCaptureMessageTest extends BaseTest {
   @Test
   public void equalInstancesAreEqual() {
     List<TypeBehavior.ValueFactory<LogCapture.Message>> valueFactories = new ArrayList<>();
-    for (String name: new String[] { "name1", "name2" }) {
-      for (LDLogLevel level: LDLogLevel.values()) {
-        for (String text: new String[] { "text1", "text2" }) {
-          valueFactories.add(() -> new LogCapture.Message(name, level, text));
+    Instant time1 = Instant.ofEpochSecond(1000);
+    Instant time2 = Instant.ofEpochSecond(2000);
+    for (Instant time: new Instant[] { time1, time2 }) {
+      for (String name: new String[] { "name1", "name2" }) {
+        for (LDLogLevel level: LDLogLevel.values()) {
+          for (String text: new String[] { "text1", "text2" }) {
+            valueFactories.add(() -> new LogCapture.Message(time, name, level, text));
+          }
         }
       }
     }
@@ -38,8 +45,15 @@ public class LogCaptureMessageTest extends BaseTest {
   
   @Test
   public void simpleStringRepresentation() {
-    LogCapture.Message m = new LogCapture.Message("name", LDLogLevel.INFO, "text");
+    LogCapture.Message m = new LogCapture.Message(Instant.now(), "name", LDLogLevel.INFO, "text");
     assertThat(m.toString(), equalTo("[name] INFO:text"));
+  }
+
+  @Test
+  public void stringRepresentationWithTimestamp() {
+    Instant timestamp = Instant.ofEpochSecond(100000);
+    LogCapture.Message m = new LogCapture.Message(timestamp, "name", LDLogLevel.INFO, "text");
+    assertThat(m.toStringWithTimestamp(), equalTo("1970-01-02 03:46:40.000 Z [name] INFO:text"));
   }
 
   @Test
