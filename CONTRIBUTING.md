@@ -14,7 +14,9 @@ We encourage pull requests and other contributions from the community. Before su
  
 ### Prerequisites
  
-The project builds with [Gradle](https://gradle.org/) and should be built against Java 8. Since it can be used in Android as well as server-side Java, do not use any Java 8 APIs that are unsupported in Android (CI tests will enforce this).
+The project builds with [Gradle](https://gradle.org/) and should be built against Java 8. Since it can be used in Android as well as server-side Java, do not use any syntax or Java 8 APIs that are unsupported in Android (CI tests will enforce this).
+
+The current lowest supported Android API version is 21, so unsupported things that must not appear in the library code (or test code) include the `java.util.function` package and lambdas.
  
 ### Building
 
