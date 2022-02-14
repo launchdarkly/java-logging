@@ -10,7 +10,7 @@ import java.util.TimeZone;
  * A basic logging implementation that formats output and sends it to an arbitrary destination. 
  * <p>
  * Factory methods for this class are {@link Logs#toStream(PrintStream)},
- * {@link Logs#toConsole()}, and {@link Logs#toMethod(LineWriter)}.
+ * {@link Logs#toConsole()}, and {@link Logs#toMethod(SimpleLogging.LineWriter)}.
  * <p>
  * Currently the output is always in the format "Timestamp [LoggerName] LEVEL: text", or, if a
  * tag is specified, "Timestamp {Tag} [LoggerName] LEVEL: text". The Timestamp format defaults
