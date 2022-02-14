@@ -109,7 +109,7 @@ public abstract class Logs {
    * @return a log adapter
    */
   public static SimpleLogging toMethod(SimpleLogging.LineWriter lineWriter) {
-    return new SimpleLogging(lineWriter, null, SimpleLogging.DEFAULT_TIMESTAMP_FORMAT);
+    return new SimpleLogging(lineWriter, null, SimpleLogging.getDefaultTimestampFormat());
   }
   
   /**

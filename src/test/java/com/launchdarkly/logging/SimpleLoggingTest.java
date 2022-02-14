@@ -5,11 +5,10 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,7 +68,7 @@ public class SimpleLoggingTest extends BaseTest {
 
   @Test
   public void testDefaultDateFormat() {
-    String exampleDate = SimpleLogging.DEFAULT_TIMESTAMP_FORMAT.format(Instant.now());
+    String exampleDate = SimpleLogging.getDefaultTimestampFormat().format(new Date());
     
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(bos);
@@ -88,13 +87,13 @@ public class SimpleLoggingTest extends BaseTest {
   
   @Test
   public void testCustomDateFormat() {
-    String currentYear = DateTimeFormatter.ofPattern("uuuu").format(Instant.now().atZone(ZoneOffset.UTC));
+    String currentYear = new SimpleDateFormat("yyyy").format(new Date());
     
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).timestampFormat(DateTimeFormatter.ofPattern("uuuu").withZone(ZoneOffset.UTC)),
+        Logs.toStream(ps).timestampFormat(new SimpleDateFormat("yyyy")),
         "logname"
     );
     logger.warn("message");

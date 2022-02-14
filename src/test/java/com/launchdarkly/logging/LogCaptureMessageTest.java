@@ -4,9 +4,8 @@ import com.launchdarkly.testhelpers.TypeBehavior;
 
 import org.junit.Test;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -18,7 +17,7 @@ import static org.hamcrest.Matchers.nullValue;
 public class LogCaptureMessageTest extends BaseTest {
   @Test
   public void testBasicProperties() {
-    Instant timestamp = Instant.now();
+    Date timestamp = new Date();
     LogCapture.Message m = new LogCapture.Message(timestamp, "name", LDLogLevel.INFO, "text");
     assertThat(m.getTimestamp(), equalTo(timestamp));
     assertThat(m.getLoggerName(), equalTo("name"));
@@ -29,9 +28,9 @@ public class LogCaptureMessageTest extends BaseTest {
   @Test
   public void equalInstancesAreEqual() {
     List<TypeBehavior.ValueFactory<LogCapture.Message>> valueFactories = new ArrayList<>();
-    Instant time1 = Instant.ofEpochSecond(1000);
-    Instant time2 = Instant.ofEpochSecond(2000);
-    for (Instant time: new Instant[] { time1, time2 }) {
+    Date time1 = new Date(1000);
+    Date time2 = new Date(2000);
+    for (Date time: new Date[] { time1, time2 }) {
       for (String name: new String[] { "name1", "name2" }) {
         for (LDLogLevel level: LDLogLevel.values()) {
           for (String text: new String[] { "text1", "text2" }) {
@@ -45,15 +44,15 @@ public class LogCaptureMessageTest extends BaseTest {
   
   @Test
   public void simpleStringRepresentation() {
-    LogCapture.Message m = new LogCapture.Message(Instant.now(), "name", LDLogLevel.INFO, "text");
+    LogCapture.Message m = new LogCapture.Message(new Date(), "name", LDLogLevel.INFO, "text");
     assertThat(m.toString(), equalTo("[name] INFO:text"));
   }
 
   @Test
   public void stringRepresentationWithTimestamp() {
-    Instant timestamp = Instant.ofEpochSecond(100000);
+    Date timestamp = new Date(100000000);
     LogCapture.Message m = new LogCapture.Message(timestamp, "name", LDLogLevel.INFO, "text");
-    assertThat(m.toStringWithTimestamp(), equalTo("1970-01-02 03:46:40.000 Z [name] INFO:text"));
+    assertThat(m.toStringWithTimestamp(), equalTo("1970-01-02 03:46:40.000 UTC [name] INFO:text"));
   }
 
   @Test
@@ -62,9 +61,9 @@ public class LogCaptureMessageTest extends BaseTest {
     LDLogger logger = LDLogger.withAdapter(sink, "");
     logger.info("text1");
     logger.info("text2");
-    LogCapture.Message m1 = sink.awaitMessage(Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.awaitMessage(1000);
     assertThat(m1.getText(), equalTo("text1"));
-    LogCapture.Message m2 = sink.awaitMessage(Duration.ofSeconds(1));
+    LogCapture.Message m2 = sink.awaitMessage(1000);
     assertThat(m2.getText(), equalTo("text2"));
   }
   
@@ -82,9 +81,9 @@ public class LogCaptureMessageTest extends BaseTest {
       } catch (InterruptedException e) {}
       logger.info("text2");
     }).start();
-    LogCapture.Message m1 = sink.awaitMessage(Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.awaitMessage(1000);
     assertThat(m1.getText(), equalTo("text1"));
-    LogCapture.Message m2 = sink.awaitMessage(Duration.ofSeconds(1));
+    LogCapture.Message m2 = sink.awaitMessage(1000);
     assertThat(m2.getText(), equalTo("text2"));
   }
   
@@ -98,7 +97,7 @@ public class LogCaptureMessageTest extends BaseTest {
       } catch (InterruptedException e) {}
       logger.info("text1");
     }).start();
-    LogCapture.Message m = sink.awaitMessage(Duration.ofMillis(10));
+    LogCapture.Message m = sink.awaitMessage(10);
     assertThat(m, nullValue());
   }
   
@@ -114,7 +113,7 @@ public class LogCaptureMessageTest extends BaseTest {
       logger.info("text1");
     }).start();
     Thread t = new Thread(() -> {
-      received.set(sink.awaitMessage(Duration.ofSeconds(1)));
+      received.set(sink.awaitMessage(1000));
     });
     t.start();
     t.interrupt();
@@ -127,9 +126,9 @@ public class LogCaptureMessageTest extends BaseTest {
     LDLogger logger = LDLogger.withAdapter(sink, "");
     logger.warn("text2");
     logger.info("text1");
-    LogCapture.Message m1 = sink.awaitMessage(LDLogLevel.INFO, Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.awaitMessage(LDLogLevel.INFO, 1000);
     assertThat(m1.getText(), equalTo("text1"));
-    LogCapture.Message m2 = sink.awaitMessage(LDLogLevel.WARN, Duration.ofSeconds(1));
+    LogCapture.Message m2 = sink.awaitMessage(LDLogLevel.WARN, 1000);
     assertThat(m2.getText(), equalTo("text2"));
   }
 
@@ -147,9 +146,9 @@ public class LogCaptureMessageTest extends BaseTest {
       } catch (InterruptedException e) {}
       logger.info("text1");
     }).start();
-    LogCapture.Message m1 = sink.awaitMessage(LDLogLevel.INFO, Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.awaitMessage(LDLogLevel.INFO, 1000);
     assertThat(m1.getText(), equalTo("text1"));
-    LogCapture.Message m2 = sink.awaitMessage(LDLogLevel.WARN, Duration.ofSeconds(1));
+    LogCapture.Message m2 = sink.awaitMessage(LDLogLevel.WARN, 1000);
     assertThat(m2.getText(), equalTo("text2"));
   }
   
@@ -158,7 +157,7 @@ public class LogCaptureMessageTest extends BaseTest {
     LogCapture sink = Logs.capture();
     LDLogger logger = LDLogger.withAdapter(sink, "");
     logger.info("text1");
-    LogCapture.Message m1 = sink.requireMessage(Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.requireMessage(1000);
     assertThat(m1.getText(), equalTo("text1"));
   }
   
@@ -172,7 +171,7 @@ public class LogCaptureMessageTest extends BaseTest {
       } catch (InterruptedException e) {}
       logger.info("text1");
     }).start();
-    sink.requireMessage(Duration.ofMillis(10));
+    sink.requireMessage(10);
   }
   
   @Test
@@ -181,7 +180,7 @@ public class LogCaptureMessageTest extends BaseTest {
     LDLogger logger = LDLogger.withAdapter(sink, "");
     logger.warn("text2");
     logger.info("text1");
-    LogCapture.Message m1 = sink.requireMessage(LDLogLevel.INFO, Duration.ofSeconds(1));
+    LogCapture.Message m1 = sink.requireMessage(LDLogLevel.INFO, 1000);
     assertThat(m1.getText(), equalTo("text1"));
   }
 }
