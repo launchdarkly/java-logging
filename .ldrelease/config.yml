@@ -6,7 +6,7 @@ publications:
   - url: https://javadoc.io/doc/com.launchdarkly/launchdarkly-logging
     description: documentation (javadoc.io)
 
-template:
+jobs:
   - docker:
       image: gradle:7.3.3-jdk8
     template:
