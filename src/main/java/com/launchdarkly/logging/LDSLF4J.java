@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
  * specifying where the output actually goes and what log levels to enable. See SLF4J
  * documentation for details.
  */
-public final class LDSLF4J implements LDLogAdapter {
-  private static final LDSLF4J INSTANCE = new LDSLF4J();
-  
+public final class LDSLF4J {
   private LDSLF4J() {}
   
   /**
@@ -30,15 +28,19 @@ public final class LDSLF4J implements LDLogAdapter {
    * @return the log adapter
    */
   public static LDLogAdapter adapter() {
-    return INSTANCE;
+    return AdapterImpl.INSTANCE;
   }
 
-  @Override
-  public Channel newChannel(String name) {
-    return new ChannelImpl(LoggerFactory.getLogger(name));
+  private static final class AdapterImpl implements LDLogAdapter {
+    private static final AdapterImpl INSTANCE = new AdapterImpl();
+
+    @Override
+    public Channel newChannel(String name) {
+      return new ChannelImpl(LoggerFactory.getLogger(name));
+    }
   }
   
-  private static final class ChannelImpl implements Channel {
+  private static final class ChannelImpl implements LDLogAdapter.Channel {
     private final org.slf4j.Logger logger;
     
     ChannelImpl(org.slf4j.Logger logger) {
