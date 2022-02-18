@@ -45,7 +45,7 @@ public interface LDLogAdapter {
    * assume that {@code message} and {@code format} parameters are non-null.
    * <p>
    * The {@code format} parameter must use the same format defined by {@link SimpleFormat}.
-   * The reason that {@code format}/{@code param} values are  passed straight through from
+   * The reason that {@code format}/{@code param} values are passed straight through from
    * {@link LDLogger} to {@link Channel}, instead of having {@link LDLogger} do the string
    * interpolation, is that a {@link Channel} implementation that is delegating to another
    * logging framework may not be able to know for sure whether a given log level is enabled
