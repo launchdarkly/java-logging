@@ -15,8 +15,7 @@
  * on both server-side Java and Android, and there is no single logging framework that
  * is consistently favored across all platforms. For instance, some server-side Java
  * applications may use <a href="https://www.slf4j.org/">SLF4J</a> while others use
- * {@code java.util.logging}, and Android applications may use
- * <a href="https://github.com/JakeWharton/timber">Timber</a> or use the native Android
+ * {@code java.util.logging}, and Android applications may use the native Android
  * logging API directly. Therefore, it's undesirable for the LaunchDarkly libraries to
  * have built-in dependencies on any of these. This package, with its small feature set
  * geared toward the needs of LaunchDarkly SDKs, aims to make the task of writing and
@@ -56,8 +55,7 @@
  *   {@link com.launchdarkly.logging.LDSLF4J}. </li>
  * <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html">java.util.logging</a>:
  *   Use {@link com.launchdarkly.logging.Logs#toJavaUtilLogging()}. </li>
- * <li> <a href="https://github.com/JakeWharton/timber">Timber</a>, or the native
- *   Android logging API: Provided in the LaunchDarkly Android SDK.</li>
+ * <li> The native Android logging API: Provided in the LaunchDarkly Android SDK.</li>
  * </ul>
  */
 package com.launchdarkly.logging;
