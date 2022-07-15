@@ -9,7 +9,9 @@ For more information and examples, see the [API documentation](https://javadoc.i
 
 ## Supported Java versions
 
-This version of the library works with Java 8 and above, or Android.
+This version of the library works with Java 8 and above.
+
+It can be used in Android projects as long as the project is built with version 4.x or later of the Android Gradle plugin, which provides support for Java 8 features via desugaring.
 
 ## Contributing
 

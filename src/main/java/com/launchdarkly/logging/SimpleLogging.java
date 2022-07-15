@@ -1,10 +1,9 @@
 package com.launchdarkly.logging;
 
 import java.io.PrintStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  * A basic logging implementation that formats output and sends it to an arbitrary destination. 
@@ -14,7 +13,7 @@ import java.util.TimeZone;
  * <p>
  * Currently the output is always in the format "Timestamp [LoggerName] LEVEL: text", or, if a
  * tag is specified, "Timestamp {Tag} [LoggerName] LEVEL: text". The Timestamp format defaults
- * to {@link #getDefaultTimestampFormat()} but can be customized.
+ * to {@link #DEFAULT_TIMESTAMP_FORMAT} but can be customized.
  * <p>
  * By itself, this class provides no level filtering. You may use
  * {@link Logs#level(LDLogAdapter, LDLogLevel)} to filter by level, although the LaunchDarkly
@@ -33,6 +32,13 @@ import java.util.TimeZone;
  */
 public final class SimpleLogging implements LDLogAdapter {
   /**
+   * The default format for log timestamps. This is a {@code DateTimeFormatter} with the pattern
+   * {@code "uuuu-MM-dd HH:mm:ss.SSS zzz"}.
+   */
+  public static final DateTimeFormatter DEFAULT_TIMESTAMP_FORMAT =
+      DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS zzz").withZone(ZoneOffset.UTC);
+
+  /**
    * Functional interface for a method or lambda that writes a line of text.
    * <p>
    * {@link SimpleLogging} will format the line of text first and then call this method.
@@ -48,27 +54,11 @@ public final class SimpleLogging implements LDLogAdapter {
     void writeLine(String line);
   }
   
-  /**
-   * The default format for log timestamps. This is a {@code SimpleDateFormat} with the pattern
-   * {@code "yyyy-MM-dd HH:mm:ss.SSS zzz"}.
-   * <p>
-   * Because {@link SimpleDateFormat} is not thread-safe, this method always creates a new
-   * instance. We cannot use <code>java.time.DateTimeFormatter</code> because currently we need
-   * to support Android API versions that do not have <code>java.time</code>.
-   * 
-   * @return a date/time format
-   */
-  public static SimpleDateFormat getDefaultTimestampFormat() {
-    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz");
-    f.setTimeZone(TimeZone.getTimeZone("UTC"));
-    return f;
-  }
-
   final LineWriter lineWriter; // exposed for testing
   private final String tag;
-  private final DateFormat timestampFormat;
+  private final DateTimeFormatter timestampFormat;
   
-  SimpleLogging(LineWriter lineWriter, String tag, DateFormat timestampFormat) {
+  SimpleLogging(LineWriter lineWriter, String tag, DateTimeFormatter timestampFormat) {
     this.lineWriter = lineWriter;
     this.tag = tag;
     this.timestampFormat = timestampFormat;
@@ -85,16 +75,16 @@ public final class SimpleLogging implements LDLogAdapter {
   public SimpleLogging tag(String tag) {
     return new SimpleLogging(this.lineWriter, tag, this.timestampFormat);
   }
-  
+
   /**
-   * Specifies the format for date/timestamps. The default is {@link #getDefaultTimestampFormat()}.
+   * Specifies the format for date/timestamps. The default is {@link #DEFAULT_TIMESTAMP_FORMAT}.
    * <p>
    * This method does not modify the current instance, but returns a new adapter based on this one.
    * 
-   * @param timestampFormat a {@code DateFormat}, or null to omit the date and time
+   * @param timestampFormat a {@code DateTimeFormatter}, or null to omit the date and time
    * @return an adapter with the specified configuration
    */
-  public SimpleLogging timestampFormat(DateFormat timestampFormat) {
+  public SimpleLogging timeFormat(DateTimeFormatter timestampFormat) {
     return new SimpleLogging(this.lineWriter, this.tag, timestampFormat);
   }
   
@@ -138,9 +128,7 @@ public final class SimpleLogging implements LDLogAdapter {
     private void print(LDLogLevel level, String message) {
       StringBuilder s = new StringBuilder();
       if (timestampFormat != null) {
-        // Unfortunately, SimpleDateFormat is not thread-safe
-        DateFormat clonedFormat = (DateFormat)timestampFormat.clone();
-        s.append(clonedFormat.format(new Date())).append(" ");
+        s.append(timestampFormat.format(Instant.now())).append(" ");
       }
       if (tag != null && !tag.isEmpty()) {
         s.append("{").append(tag).append("} ");

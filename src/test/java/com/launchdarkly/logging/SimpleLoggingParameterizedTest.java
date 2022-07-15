@@ -29,7 +29,7 @@ public class SimpleLoggingParameterizedTest extends ParameterizedTestWithLevel {
     PrintStream ps = new PrintStream(bos);
     
     LDLogger logger = LDLogger.withAdapter(
-        Logs.toStream(ps).timestampFormat(null),
+        Logs.toStream(ps).timeFormat(null),
         "logname"
     );
     writeTestMessages(logger, outputLevel);
