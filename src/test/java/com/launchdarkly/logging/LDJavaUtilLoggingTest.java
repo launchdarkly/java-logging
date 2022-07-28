@@ -75,6 +75,11 @@ public class LDJavaUtilLoggingTest extends ParameterizedTestWithLevel {
     
     assertThat(logger.isEnabled(outputLevel), is(true));
   }
+  
+  @Test
+  public void isLevelFilterConfiguredExternally() {
+    assertThat(Logs.toJavaUtilLogging().isLevelFilterConfiguredExternally(), is(true));
+  }
 
   private Level javaLevelFor(LDLogLevel level) {
     switch (outputLevel) {

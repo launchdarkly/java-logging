@@ -46,4 +46,9 @@ public class MultiLogTest extends ParameterizedTestWithLevel {
     LDLogAdapter multi2 = Logs.toMultiple(Logs.none(), Logs.toConsole());
     assertThat(LDLogger.withAdapter(multi2, logName).isEnabled(outputLevel), is(true));
   }
+
+  @Test
+  public void isLevelFilterConfiguredExternally() {
+    assertThat(Logs.toMultiple().isLevelFilterConfiguredExternally(), is(false));
+  }
 }

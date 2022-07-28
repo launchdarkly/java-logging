@@ -77,6 +77,11 @@ public class LDSLF4JTest extends ParameterizedTestWithLevel {
     assertThat(logger.isEnabled(outputLevel), is(false));
   }
   
+  @Test
+  public void isLevelFilterConfiguredExternally() {
+    assertThat(LDSLF4J.adapter().isLevelFilterConfiguredExternally(), is(true));
+  }
+  
   private Level slf4jLevelFor(LDLogLevel level) {
     switch (outputLevel) {
     case DEBUG:

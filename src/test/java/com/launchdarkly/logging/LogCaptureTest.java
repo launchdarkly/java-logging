@@ -12,6 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 @SuppressWarnings("javadoc")
 @RunWith(Parameterized.class)
@@ -32,7 +33,12 @@ public class LogCaptureTest extends ParameterizedTestWithLevel {
     
     verifyCapturedOutput(outputLevel, LDLogLevel.DEBUG, logName, sink);
   }
-  
+
+  @Test
+  public void isLevelFilterConfiguredExternally() {
+    assertThat(Logs.capture().isLevelFilterConfiguredExternally(), is(false));
+  }
+
   public static void verifyCapturedOutput(
       LDLogLevel outputLevel,
       LDLogLevel enableLevel,
