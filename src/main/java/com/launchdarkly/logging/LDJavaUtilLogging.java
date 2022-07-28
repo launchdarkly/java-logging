@@ -8,7 +8,7 @@ import static com.launchdarkly.logging.SimpleFormat.format;
 /**
  * See {@link Logs#toJavaUtilLogging()}.
  */
-final class LDJavaUtilLogging implements LDLogAdapter {
+final class LDJavaUtilLogging implements LDLogAdapter, LDLogAdapter.IsConfiguredExternally {
   static final LDLogAdapter INSTANCE = new LDJavaUtilLogging();
   
   private LDJavaUtilLogging() {}
@@ -16,11 +16,6 @@ final class LDJavaUtilLogging implements LDLogAdapter {
   @Override
   public Channel newChannel(String name) {
     return new ChannelImpl(Logger.getLogger(name));
-  }
-
-  @Override
-  public boolean isLevelFilterConfiguredExternally() {
-    return true;
   }
   
   private static final class ChannelImpl implements Channel {

@@ -40,7 +40,7 @@ public abstract class Logs {
    *     LDLogAdapter filteredLogging = Logs.level(Logs.toConsole(), LDLogLevel.WARN);
    * </code></pre>
    * <p>
-   * If applied to an adapter that does have an external filter configuration, this has
+   * If applied to an adapter that does have an external configuration mechanism, this has
    * no effect.
 
    * @param adapter a log adapter
@@ -48,7 +48,7 @@ public abstract class Logs {
    * @return a new log adapter based on the previous one with filtering applied
    */
   public static LDLogAdapter level(LDLogAdapter adapter, LDLogLevel minimumLevel) {
-    if (adapter.isLevelFilterConfiguredExternally()) {
+    if (adapter instanceof LDLogAdapter.IsConfiguredExternally) {
       return adapter;
     }
     return new LevelFilter(adapter, minimumLevel);

@@ -32,17 +32,6 @@ public interface LDLogAdapter {
   Channel newChannel(String name);
   
   /**
-   * Indicates whether level filtering is provided by an external framework. This is true
-   * for a framework such as SLF4J, which has its own configuration mechanism, so that the
-   * LaunchDarkly logging framework cannot tell it what levels to enable.
-   * 
-   * @return true if there is an external framework configuration for log levels
-   */
-  default boolean isLevelFilterConfiguredExternally() {
-    return false;
-  }
-  
-  /**
    * The underlying implementation object used by some {@link LDLogger} instance.
    * <p>
    * Applications or libraries that generate log output do not need to interact directly with
@@ -117,4 +106,12 @@ public interface LDLogAdapter {
      */
     void log(LDLogLevel level, String format, Object... params);
   }
+  
+  /**
+   * Marker interface indicating that this adapter is for an external framework that has its
+   * own configuration mechanism. If the adapter implements this interface, the LaunchDarkly
+   * logging framework will not try to do its own level filtering.
+   * @since 1.1.0
+   */
+  public interface IsConfiguredExternally {}
 }

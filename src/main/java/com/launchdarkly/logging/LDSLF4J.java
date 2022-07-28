@@ -31,17 +31,12 @@ public final class LDSLF4J {
     return AdapterImpl.INSTANCE;
   }
 
-  private static final class AdapterImpl implements LDLogAdapter {
+  private static final class AdapterImpl implements LDLogAdapter, LDLogAdapter.IsConfiguredExternally {
     private static final AdapterImpl INSTANCE = new AdapterImpl();
 
     @Override
     public Channel newChannel(String name) {
       return new ChannelImpl(LoggerFactory.getLogger(name));
-    }
-    
-    @Override
-    public boolean isLevelFilterConfiguredExternally() {
-      return true;
     }
   }
   

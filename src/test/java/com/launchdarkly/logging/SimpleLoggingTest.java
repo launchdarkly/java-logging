@@ -120,9 +120,4 @@ public class SimpleLoggingTest extends BaseTest {
     String line = resultLines.get(0);
     assertEquals("[logname] WARN: message", line);    
   }
-
-  @Test
-  public void isLevelFilterConfiguredExternally() {
-    assertThat(Logs.toStream(System.out).isLevelFilterConfiguredExternally(), is(false));
-  }
 }

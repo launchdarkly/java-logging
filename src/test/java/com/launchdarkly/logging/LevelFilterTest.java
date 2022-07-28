@@ -12,6 +12,7 @@ import java.util.List;
 import static com.launchdarkly.logging.TestHelpers.writeTestMessages;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 @SuppressWarnings("javadoc")
 @RunWith(Parameterized.class)
@@ -71,9 +72,12 @@ public class LevelFilterTest {
     LDLogger logger = LDLogger.withAdapter(filtered, "logname");
     writeTestMessages(logger, outputLevel);
     LogCaptureTest.verifyCapturedOutput(outputLevel, LDLogLevel.DEBUG, "logname", sink);
+    
+    assertThat(Logs.level(LDSLF4J.adapter(), LDLogLevel.ERROR), sameInstance(LDSLF4J.adapter()));
+    assertThat(Logs.level(Logs.toJavaUtilLogging(), LDLogLevel.ERROR), sameInstance(Logs.toJavaUtilLogging()));
   }
   
-  public static class MyExternallyConfiguredAdapter implements LDLogAdapter {
+  public static class MyExternallyConfiguredAdapter implements LDLogAdapter, LDLogAdapter.IsConfiguredExternally {
     private final LDLogAdapter wrappedAdapter;
     
     public MyExternallyConfiguredAdapter(LDLogAdapter wrappedAdapter) {
@@ -83,11 +87,6 @@ public class LevelFilterTest {
     @Override
     public Channel newChannel(String name) {
       return wrappedAdapter.newChannel(name);
-    }
-    
-    @Override
-    public boolean isLevelFilterConfiguredExternally() {
-      return true;
     }
   }
 }
