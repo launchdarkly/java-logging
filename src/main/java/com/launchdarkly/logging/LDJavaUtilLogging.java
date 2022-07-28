@@ -8,7 +8,7 @@ import static com.launchdarkly.logging.SimpleFormat.format;
 /**
  * See {@link Logs#toJavaUtilLogging()}.
  */
-final class LDJavaUtilLogging implements LDLogAdapter {
+final class LDJavaUtilLogging implements LDLogAdapter, LDLogAdapter.IsConfiguredExternally {
   static final LDLogAdapter INSTANCE = new LDJavaUtilLogging();
   
   private LDJavaUtilLogging() {}

@@ -106,4 +106,12 @@ public interface LDLogAdapter {
      */
     void log(LDLogLevel level, String format, Object... params);
   }
+  
+  /**
+   * Marker interface indicating that this adapter is for an external framework that has its
+   * own configuration mechanism. If the adapter implements this interface, the LaunchDarkly
+   * logging framework will not try to do its own level filtering.
+   * @since 1.1.0
+   */
+  public interface IsConfiguredExternally {}
 }

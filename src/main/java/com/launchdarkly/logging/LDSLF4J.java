@@ -31,7 +31,7 @@ public final class LDSLF4J {
     return AdapterImpl.INSTANCE;
   }
 
-  private static final class AdapterImpl implements LDLogAdapter {
+  private static final class AdapterImpl implements LDLogAdapter, LDLogAdapter.IsConfiguredExternally {
     private static final AdapterImpl INSTANCE = new AdapterImpl();
 
     @Override

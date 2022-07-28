@@ -32,7 +32,7 @@ public class LogCaptureTest extends ParameterizedTestWithLevel {
     
     verifyCapturedOutput(outputLevel, LDLogLevel.DEBUG, logName, sink);
   }
-  
+
   public static void verifyCapturedOutput(
       LDLogLevel outputLevel,
       LDLogLevel enableLevel,
