@@ -62,4 +62,32 @@ public class LevelFilterTest {
     LDLogger logger = LDLogger.withAdapter(filtered, "logname");
     assertThat(logger.isEnabled(LDLogLevel.DEBUG), is(true));
   }
+  
+  @Test
+  public void levelFilterIsIgnoredForExternallyConfiguredAdapter() {
+    LogCapture sink = Logs.capture();
+    LDLogAdapter adapter = new MyExternallyConfiguredAdapter(sink);
+    LDLogAdapter filtered = Logs.level(adapter, LDLogLevel.ERROR);
+    LDLogger logger = LDLogger.withAdapter(filtered, "logname");
+    writeTestMessages(logger, outputLevel);
+    LogCaptureTest.verifyCapturedOutput(outputLevel, LDLogLevel.DEBUG, "logname", sink);
+  }
+  
+  public static class MyExternallyConfiguredAdapter implements LDLogAdapter {
+    private final LDLogAdapter wrappedAdapter;
+    
+    public MyExternallyConfiguredAdapter(LDLogAdapter wrappedAdapter) {
+      this.wrappedAdapter = wrappedAdapter;
+    }
+    
+    @Override
+    public Channel newChannel(String name) {
+      return wrappedAdapter.newChannel(name);
+    }
+    
+    @Override
+    public boolean isLevelFilterConfiguredExternally() {
+      return true;
+    }
+  }
 }

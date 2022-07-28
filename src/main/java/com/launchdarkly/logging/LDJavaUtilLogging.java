@@ -17,6 +17,11 @@ final class LDJavaUtilLogging implements LDLogAdapter {
   public Channel newChannel(String name) {
     return new ChannelImpl(Logger.getLogger(name));
   }
+
+  @Override
+  public boolean isLevelFilterConfiguredExternally() {
+    return true;
+  }
   
   private static final class ChannelImpl implements Channel {
     private final java.util.logging.Logger logger;

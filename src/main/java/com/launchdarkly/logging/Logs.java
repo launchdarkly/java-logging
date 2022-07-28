@@ -25,13 +25,13 @@ public abstract class Logs {
   }
   
   /**
-   * Disables log output below the specified level.
+   * Disables log output below the specified level, if allowed by the adapter.
    * <p>
    * This is a decorator that can be applied to any {@link LDLogAdapter}, either one of
-   * the standard ones available in {@link Logs} or a custom implementation. Any log
-   * messages for a lower level will be immediately discarded; all others will be forwarded to
-   * the underlying logging implementation (which may also have other filtering rules of its
-   * own).
+   * the standard ones available in {@link Logs} or a custom implementation, as long as it
+   * is not an implementation such as {@link LDSLF4J} where there is another external
+   * mechanism for filtering. Any log messages for a lower level will be immediately
+   * discarded; all others will be forwarded to the underlying logging implementation.
    * <pre><code>
    *     // This one will write all log messages to System.err, including Debug messages
    *     LDLogAdapter unfilteredLogging = Logs.toConsole();
@@ -39,11 +39,18 @@ public abstract class Logs {
    *     // This one will write only WARN and ERROR messages
    *     LDLogAdapter filteredLogging = Logs.level(Logs.toConsole(), LDLogLevel.WARN);
    * </code></pre>
+   * <p>
+   * If applied to an adapter that does have an external filter configuration, this has
+   * no effect.
+
    * @param adapter a log adapter
    * @param minimumLevel the lowest log level that should be enabled
    * @return a new log adapter based on the previous one with filtering applied
    */
   public static LDLogAdapter level(LDLogAdapter adapter, LDLogLevel minimumLevel) {
+    if (adapter.isLevelFilterConfiguredExternally()) {
+      return adapter;
+    }
     return new LevelFilter(adapter, minimumLevel);
   }
   

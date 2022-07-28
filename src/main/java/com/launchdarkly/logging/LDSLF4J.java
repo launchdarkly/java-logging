@@ -38,6 +38,11 @@ public final class LDSLF4J {
     public Channel newChannel(String name) {
       return new ChannelImpl(LoggerFactory.getLogger(name));
     }
+    
+    @Override
+    public boolean isLevelFilterConfiguredExternally() {
+      return true;
+    }
   }
   
   private static final class ChannelImpl implements LDLogAdapter.Channel {
