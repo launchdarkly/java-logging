@@ -23,7 +23,7 @@ ext.libraries = [:]
 
 configurations {
     // The dependencies in privateImplementation will not be exposed in pom.xml or our
-    // module file.
+    // module file. See build.gradle and build-android.gradle for how this is used.
     privateImplementation.extendsFrom implementation
 }
 
@@ -36,12 +36,4 @@ dependencies {
     testImplementation("com.launchdarkly:test-helpers:1.1.0") {
         exclude group: "org.hamcrest"
     }
-}
-
-compileJava {
-    classpath = configurations.privateImplementation
-}
-
-javadoc {
-    classpath = configurations.privateImplementation
 }

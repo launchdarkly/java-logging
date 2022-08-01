@@ -69,3 +69,11 @@ dependencies {
         exclude group: "com.squareup.okhttp3" // also unused, causes dex limit to be exceeded
     }
 }
+
+compile {
+    classpath = configurations.privateImplementation // see build-shared.gradle
+}
+
+androidTestCompile {
+    classpath = configurations.privateImplementation // see build-shared.gradle
+}

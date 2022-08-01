@@ -36,6 +36,10 @@ checkstyle {
     configFile file("${project.rootDir}/checkstyle.xml")
 }
 
+compileJava {
+    classpath = configurations.privateImplementation
+}
+
 // custom tasks for creating source/javadoc jars
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -48,6 +52,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 javadoc {
+    classpath = configurations.privateImplementation // see build-shared.gradle
+
     // Force the Javadoc build to fail if there are any Javadoc warnings. See: https://discuss.gradle.org/t/javadoc-fail-on-warning/18141/3
     // See JDK-8200363 (https://bugs.openjdk.java.net/browse/JDK-8200363)
     // for information about the -Xwerror option.
