@@ -155,13 +155,6 @@ publishing {
                     developerConnection = 'scm:git:ssh:git@github.com:launchdarkly/java-logging.git'
                     url = 'https://github.com/launchdarkly/java-logging'
                 }
-            }   
-                     
-            // We are deliberately hiding our dependencies in the pom. This allows the package
-            // to provide classes like LDSLF4J that can be used *if* the caller has SLF4J in
-            // the classpath, but without causing SLF4J to be pulled in by default.
-            pom.withXml {
-                asNode().dependencies.forEach { it.value = "" }
             }
         }
     }

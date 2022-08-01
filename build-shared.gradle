@@ -21,9 +21,14 @@ ext.versions = [
 
 ext.libraries = [:]
 
+configurations {
+    // The dependencies in privateImplementation will not be exposed in pom.xml or our
+    // module file.
+    privateImplementation.extendsFrom implementation
+}
+
 dependencies {
-    // Dependencies will not be exposed in the pom - see pom.withXml block in build.gradle
-    implementation "org.slf4j:slf4j-api:${versions.slf4j}"
+    privateImplementation "org.slf4j:slf4j-api:${versions.slf4j}"
 
     testImplementation "org.hamcrest:hamcrest-library:1.3"
     testImplementation "junit:junit:4.12"
@@ -31,4 +36,12 @@ dependencies {
     testImplementation("com.launchdarkly:test-helpers:1.1.0") {
         exclude group: "org.hamcrest"
     }
+}
+
+compileJava {
+    classpath = configurations.privateImplementation
+}
+
+javadoc {
+    classpath = configurations.privateImplementation
 }
