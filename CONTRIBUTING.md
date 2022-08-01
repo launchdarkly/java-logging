@@ -58,4 +58,6 @@ Sometimes a gap in coverage is unavoidable, usually because the compiler require
 
 ## Note on dependencies
 
-This project's `build.gradle` contains special logic to exclude dependencies from `pom.xml`. This is because it is meant to be used as part of one of the LaunchDarkly SDKs, and the different SDKs have different strategies for either exposing or embedding these dependencies. Therefore, it is the responsibility of each SDK to provide its own dependency for any module that is actually required in order for `com.launchdarkly.logging` to work.
+This project includes an optional integration with SLF4J-- but we do not want to declare SLF4J as a runtime dependency, because we do not want to require applications to pull in SLF4J if they're not actually using it (see documentation comments in `LDSLF4J.java`). Therefore, our Gradle configuration declares the SLF4J dependency in a separate compile-time configuration that will not be included in the `.pom` or `.module` files when we publish the package.
+
+In general, we should avoid declaring any runtime dependencies at all. This project is intended to be very lightweight, which is especially important since it can be used in Android. For instance, as convenient as Guava can be, we should not use Guava at all (except possibly in _test_ code) because it is a large library-- and also because if the application does use Guava, we don't want to have to worry about conflicting with whatever version they're using.
