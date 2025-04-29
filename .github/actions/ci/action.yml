@@ -1,0 +1,42 @@
+name: Shared CI Workflow
+
+inputs:
+  java_version:
+    description: 'The Java version to use.'
+    required: true
+  java_distribution:
+    description: 'The Java distribution to use.'
+    required: false
+    default: temurin
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: ${{ inputs.java_distribution }}
+        java-version: ${{ inputs.java_version }}
+
+    - name: Copy gradle.properties
+      shell: bash
+      run: |
+        cp gradle.properties.example gradle.properties
+
+    - name: Restore Dependencies
+      shell: bash
+      run: ./gradlew dependencies
+
+    - name: Build Jar
+      shell: bash
+      id: buildjar
+      run: ./gradlew jar
+
+    - name: Check Style
+      shell: bash
+      run: ./gradlew checkstyleMain
+
+    - name: Run Tests
+      if: steps.buildjar.outcome == 'success'
+      shell: bash
+      run: ./gradlew test

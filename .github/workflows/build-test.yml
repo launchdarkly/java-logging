@@ -1,0 +1,83 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main, feat/**]
+    paths-ignore:
+      - '**.md' #Do not need to run CI for markdown changes.
+  pull_request:
+    branches: [main, feat/**]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build-test-linux:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        javaversion: [8, 11, 17, 19]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Shared CI Steps
+        uses: ./.github/actions/ci
+        with:
+          java_version: ${{ matrix.javaversion }}
+
+  build-test-windows:
+    strategy:
+      matrix:
+        os: [windows-latest]
+        javaversion: [11, 17]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Shared CI Steps
+        uses: ./.github/actions/ci
+        with:
+          java_version: ${{ matrix.javaversion }}
+
+  build-test-android:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      # What we want to do here is somewhat unusual: we want Android to run all of our tests from
+      # src/test/java, but run them in the Android emulator (to prove that we're only using Java
+      # APIs that our minimum Android API version supports). Normally, only tests in
+      # src/androidTest/java would be run that way. Also, Android needs a different JUnit test
+      # runner annotation on all of the test classes. So we can't just run the test code as-is.
+      #
+      # This step copies all the code from src/test/java into src/androidTest/java, except for the
+      # base class BaseTest.java, which is already defined in src/androidTest/java to provide the
+      # necessary test runner annotation.
+      - name: Copy Tests
+        shell: bash
+        run: |
+          rsync -r ./src/test/java/ ./src/androidTest/java/ --exclude='BaseTest.java'
+
+      - name: Enable KVM group perms (for performance)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Tests
+        uses: reactivecircus/android-emulator-runner@6b0df4b0efb23bb0ec63d881db79aefbc976e4b2
+        with:
+          api-level: 25
+          target: google_apis
+          emulator-boot-timeout: 900
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            ./gradlew -b build-android.gradle :assembleAndroidTest
+            ./gradlew -b build-android.gradle :connectedAndroidTest
+
+      - name: Store Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: androidTest-results
+          path: ./build/outputs/androidTest-results/*
