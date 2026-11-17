@@ -18,7 +18,7 @@ jobs:
         javaversion: [8, 11, 17, 19]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Shared CI Steps
         uses: ./.github/actions/ci
@@ -32,7 +32,7 @@ jobs:
         javaversion: [11, 17]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Shared CI Steps
         uses: ./.github/actions/ci
@@ -42,7 +42,7 @@ jobs:
   build-test-android:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       # What we want to do here is somewhat unusual: we want Android to run all of our tests from
       # src/test/java, but run them in the Android emulator (to prove that we're only using Java
@@ -65,7 +65,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run Tests
-        uses: reactivecircus/android-emulator-runner@6b0df4b0efb23bb0ec63d881db79aefbc976e4b2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 25
           target: google_apis
@@ -77,7 +77,7 @@ jobs:
             ./gradlew -b build-android.gradle :connectedAndroidTest
 
       - name: Store Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: androidTest-results
           path: ./build/outputs/androidTest-results/*
